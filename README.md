@@ -23,10 +23,6 @@ IntelliLearn/
 ├── public/ # Static files
 └── package.json # Dependencies & scripts
 
-yaml
-Copy
-Edit
-
 ---
 
 ## Tech Stack
@@ -40,20 +36,22 @@ Edit
 ## Getting Started
 
 ### Clone the Repository
-```bash
+```
+bash
 git clone https://github.com/YourUsername/IntelliLearn.git
 cd IntelliLearn
+```
 Install Dependencies
+```
 bash
-Copy
-Edit
 npm install
+```
 Run the Development Server
+```
 bash
-Copy
-Edit
 npm run dev
-Future Scope
+```
+# Future Scope
 Integration with live AI/NLP APIs for advanced chatbot capabilities
 
 Real-time ERP data integration
@@ -62,8 +60,8 @@ Predictive learning analytics for student support
 
 Smart campus services such as transport, events, and notifications
 
-License
+# License
 This project is licensed under the MIT License.
 
-Authors
+# Authors
 Developed as part of the Smart Campus & Smart Learning Initiative at MIT-ADT.
