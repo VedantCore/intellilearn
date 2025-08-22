@@ -10,8 +10,8 @@ import { Input } from '../components/Input';
 // Create a .env file in your project's root and add:
 // REACT_APP_GEMINI_API_KEY='your_key_here'
 // --- Google Gemini Client Setup ---
-console.log("Key being used:", process.env.AIzaSyCtjk1thjWRBUuerko_Tdk7pOgUxet20as); // <-- ADD THIS LINE
-const genAI = new GoogleGenerativeAI(process.env.AIzaSyCtjk1thjWRBUuerko_Tdk7pOgUxet20as);
+console.log("Key being used:", process.env.REACT_APP_GEMINI_API_KEY); // <-- ADD THIS LINE
+const genAI = new GoogleGenerativeAI(process.env.REACT_APP_GEMINI_API_KEY);
 
 const SectionWrapper = ({ id, title, subtitle, children }) => (
     <section id={id} className="animate-fade-in-up">
@@ -144,7 +144,7 @@ const AIChatbotERPSection = () => {
                             </p>
                         </CardContent>
                          <CardFooter>
-                            <a href="https://mitadt.is.currently.offline/" target="_blank" rel="noopener noreferrer" className="w-full">
+                            <a href="https://g01.tcsion.com/SelfServices/home" target="_blank" rel="noopener noreferrer" className="w-full">
                                 <Button className="w-full bg-gray-800 text-gray-200 hover:bg-gray-700 border border-gray-700">
                                     Go to ERP Portal <ExternalLink className="h-4 w-4 ml-2" />
                                 </Button>

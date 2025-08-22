@@ -10,7 +10,7 @@ import { Button } from './components/Button';
 
 export default function App() {
   // --- ADD THESE TWO LINES FOR DEBUGGING ---
-  console.log("Gemini API Key:", process.env.AIzaSyCtjk1thjWRBUuerko_Tdk7pOgUxet20as);
+  console.log("Gemini API Key:", process.env.REACT_APP_GEMINI_API_KEY);
   // -----------------------------------------
 
   const [activeSection, setActiveSection] = useState('home');
