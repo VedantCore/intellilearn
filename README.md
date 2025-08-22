@@ -1,6 +1,6 @@
 # IntelliLearn by MIT-ADT
 
-IntelliLearn is an AI-powered Smart Campus platform designed for MIT-ADT University, built using React, Tailwind CSS, and shadcn/ui. It integrates an AI-driven chatbot and ERP access to provide instant academic and administrative support, helping students save time, reduce stress, and enhance their learning experience.
+IntelliLearn is an AI-powered Smart Campus platform designed for MIT-ADT University, built using REACT, TailwindCSS, and shadcn/ui UI elements. It integrates an AI-driven chatbot and ERP access to provide instant academic and administrative support, helping students save time, reduce stress, and enhance their learning experience.
 
 ---
 
