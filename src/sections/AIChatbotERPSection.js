@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { marked } from "marked";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Bot, School, Send, ExternalLink } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../components/Card';
@@ -6,155 +7,158 @@ import { Button } from '../components/Button';
 import { Input } from '../components/Input';
 
 // --- Google Gemini Client Setup ---
-// IMPORTANT: This uses an environment variable to keep your API key secret.
-// Create a .env file in your project's root and add:
-// REACT_APP_GEMINI_API_KEY='your_key_here'
-// --- Google Gemini Client Setup ---
-console.log("Key being used:", process.env.REACT_APP_GEMINI_API_KEY); // <-- ADD THIS LINE
 const genAI = new GoogleGenerativeAI(process.env.REACT_APP_GEMINI_API_KEY);
 
 const SectionWrapper = ({ id, title, subtitle, children }) => (
-    <section id={id} className="animate-fade-in-up">
-        <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white">{title}</h2>
-            <p className="mt-3 max-w-2xl mx-auto text-lg text-gray-400">{subtitle}</p>
-        </div>
-        {children}
-    </section>
+  <section id={id} className="animate-fade-in-up">
+    <div className="text-center mb-12">
+      <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white">{title}</h2>
+      <p className="mt-3 max-w-2xl mx-auto text-lg text-gray-400">{subtitle}</p>
+    </div>
+    {children}
+  </section>
 );
 
 const AIChatbotERPSection = () => {
-    // We store messages in a format suitable for display: { role: 'user' | 'model', content: '...' }
-    const [messages, setMessages] = useState([
-        { role: 'model', content: 'Hello! I am the IntelliLearn AI assistant, powered by Gemini. How can I help you with MIT-ADT today?' }
-    ]);
-    const [input, setInput] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const [chat, setChat] = useState(null); // To hold the chat session
-    const messagesEndRef = useRef(null);
+  const [messages, setMessages] = useState([
+    { role: 'model', content: 'Hello! I am the IntelliLearn AI assistant, powered by Gemini. How can I help you with MIT-ADT today?' }
+  ]);
+  const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [chat, setChat] = useState(null);
+  const messagesEndRef = useRef(null);
 
-    // Initialize the chat session when the component mounts
-    useEffect(() => {
-        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-        // FIX: The 'parts' property must be an array of objects, not a string.
-        const chatSession = model.startChat({
-            history: [
-                { role: "user", parts: [{ text: "You are a helpful and concise assistant for MIT-ADT University, named IntelliLearn AI. Provide information regarding our university." }] },
-                { role: "model", parts: [{ text: "Okay, I understand. I am the IntelliLearn AI, an assistant for MIT-ADT University. How can I help?" }] }
-            ],
-            generationConfig: {
-                maxOutputTokens: 200,
-            },
-        });
-        setChat(chatSession);
-    }, []);
+  useEffect(() => {
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    };
+    const chatSession = model.startChat({
+      history: [
+        { role: "user", parts: [{ text: "You are a helpful and concise assistant for MIT-ADT University, named IntelliLearn AI. Provide information regarding our university." }] },
+        { role: "model", parts: [{ text: "Okay, I understand. I am the IntelliLearn AI, an assistant for MIT-ADT University. How can I help?" }] }
+      ],
+      generationConfig: {
+        maxOutputTokens: 1000,
+      },
+    });
+    setChat(chatSession);
+  }, []);
 
-    useEffect(scrollToBottom, [messages]);
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
-    const handleSend = async () => {
-        if (input.trim() === '' || isLoading || !chat) return;
+  useEffect(scrollToBottom, [messages]);
 
-        const userMessage = { role: 'user', content: input };
-        setMessages(prev => [...prev, userMessage]);
-        setInput('');
-        setIsLoading(true);
+  const handleSend = async () => {
+    if (input.trim() === '' || isLoading || !chat) return;
 
-        try {
-            // --- API Call to Gemini ---
-            const result = await chat.sendMessage(input);
-            const response = await result.response;
-            const text = response.text();
+    const userMessage = { role: 'user', content: input };
+    setMessages(prev => [...prev, userMessage]);
+    setInput('');
+    setIsLoading(true);
 
-            const botResponse = { role: 'model', content: text };
-            setMessages(prev => [...prev, botResponse]);
+    try {
+      // --- API Call to Gemini ---
+      const result = await chat.sendMessage(input);
+      const response = await result.response;
 
-        } catch (error) {
-            console.error("Error fetching response from Gemini:", error);
-            const errorMessage = { role: 'model', content: "Sorry, I'm having trouble connecting to my brain right now. Please try again later." };
-            setMessages(prev => [...prev, errorMessage]);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+      // ✅ Get text (with markdown like **bold**)
+      const rawText = await response.text();
 
-    return (
-        <SectionWrapper id="chatbot-erp" title="AI Chatbot & ERP Access" subtitle="Get instant answers and quick access to essential campus systems.">
-            <div className="grid lg:grid-cols-2 gap-12">
-                {/* AI Chatbot Card */}
-                <Card className="flex flex-col">
-                    <CardHeader>
-                        <CardTitle className="flex items-center"><Bot className="mr-2 text-blue-400"/> AI Assistant</CardTitle>
-                        <CardDescription>Ask me anything about MIT-ADT (Powered by Gemini)</CardDescription>
-                    </CardHeader>
-                    <CardContent className="flex-grow flex flex-col">
-                        <div className="flex-grow h-80 overflow-y-auto p-4 bg-gray-950 rounded-lg border border-gray-800 space-y-4">
-                            {messages.map((msg, index) => (
-                                <div key={index} className={`flex items-end gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                    {msg.role === 'model' && <div className="flex-shrink-0 h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center"><Bot className="h-5 w-5 text-white" /></div>}
-                                    <div className={`max-w-xs md:max-w-md rounded-lg px-4 py-2 ${msg.role === 'user' ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-200'}`}>
-                                        <p className="text-sm">{msg.content}</p>
-                                    </div>
-                                </div>
-                            ))}
-                            {isLoading && (
-                                <div className="flex items-end gap-2 justify-start">
-                                    <div className="flex-shrink-0 h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center"><Bot className="h-5 w-5 text-white" /></div>
-                                    <div className="max-w-xs md:max-w-md rounded-lg px-4 py-2 bg-gray-800 text-gray-200">
-                                        <div className="flex items-center space-x-1">
-                                            <span className="h-2 w-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
-                                            <span className="h-2 w-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
-                                            <span className="h-2 w-2 bg-gray-400 rounded-full animate-bounce"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-                            <div ref={messagesEndRef} />
-                        </div>
-                    </CardContent>
-                    <CardFooter>
-                        <div className="flex w-full items-center space-x-2">
-                            <Input
-                                placeholder="Type your message..."
-                                value={input}
-                                onChange={(e) => setInput(e.target.value)}
-                                onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                                disabled={isLoading}
-                            />
-                            <Button onClick={handleSend} disabled={isLoading} className="bg-blue-600 text-white hover:bg-blue-700">
-                                <Send className="h-4 w-4" />
-                            </Button>
-                        </div>
-                    </CardFooter>
-                </Card>
+      // ✅ Convert markdown → HTML
+      const html = marked.parse(rawText);
 
-                {/* ERP Access Card */}
-                <div className="flex flex-col justify-center">
-                     <Card className="h-full flex flex-col justify-center">
-                        <CardHeader>
-                            <CardTitle className="flex items-center"><School className="mr-2 text-blue-400"/> Campus ERP System</CardTitle>
-                            <CardDescription>Access grades, attendance, and other administrative services.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-gray-400 mb-6">
-                                The MIT-ADT University ERP system is your central portal for managing all academic and administrative tasks. Click the button below to log in with your official university credentials.
-                            </p>
-                        </CardContent>
-                         <CardFooter>
-                            <a href="https://g01.tcsion.com/SelfServices/home" target="_blank" rel="noopener noreferrer" className="w-full">
-                                <Button className="w-full bg-gray-800 text-gray-200 hover:bg-gray-700 border border-gray-700">
-                                    Go to ERP Portal <ExternalLink className="h-4 w-4 ml-2" />
-                                </Button>
-                            </a>
-                        </CardFooter>
-                    </Card>
+      // ✅ Store HTML in botResponse
+      const botResponse = { role: 'model', content: html };
+      setMessages(prev => [...prev, botResponse]);
+
+    } catch (error) {
+      console.error("Error fetching response from Gemini:", error);
+      const errorMessage = { role: 'model', content: "Sorry, I'm having trouble connecting to my brain right now. Please try again later." };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <SectionWrapper id="chatbot-erp" title="AI Chatbot & ERP Access" subtitle="Get instant answers and quick access to essential campus systems.">
+      <div className="grid lg:grid-cols-2 gap-12">
+        {/* AI Chatbot Card */}
+        <Card className="flex flex-col">
+          <CardHeader>
+            <CardTitle className="flex items-center"><Bot className="mr-2 text-blue-400"/> AI Assistant</CardTitle>
+            <CardDescription>Ask me anything about MIT-ADT (Powered by Gemini)</CardDescription>
+          </CardHeader>
+          <CardContent className="flex-grow flex flex-col">
+            <div className="flex-grow h-80 overflow-y-auto p-4 bg-gray-950 rounded-lg border border-gray-800 space-y-4">
+              {messages.map((msg, index) => (
+                <div key={index} className={`flex items-end gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                  {msg.role === 'model' && <div className="flex-shrink-0 h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center"><Bot className="h-5 w-5 text-white" /></div>}
+                  <div
+                    className={`max-w-xs md:max-w-md rounded-lg px-4 py-2 ${msg.role === 'user' ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-200'}`}
+                  >
+                    {msg.role === 'user'
+                      ? <p className="text-sm">{msg.content}</p>
+                      : <div className="prose prose-invert text-sm" dangerouslySetInnerHTML={{ __html: msg.content }} />}
+                  </div>
                 </div>
+              ))}
+              {isLoading && (
+                <div className="flex items-end gap-2 justify-start">
+                  <div className="flex-shrink-0 h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center"><Bot className="h-5 w-5 text-white" /></div>
+                  <div className="max-w-xs md:max-w-md rounded-lg px-4 py-2 bg-gray-800 text-gray-200">
+                    <div className="flex items-center space-x-1">
+                      <span className="h-2 w-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                      <span className="h-2 w-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                      <span className="h-2 w-2 bg-gray-400 rounded-full animate-bounce"></span>
+                    </div>
+                  </div>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
             </div>
-        </SectionWrapper>
-    );
+          </CardContent>
+          <CardFooter>
+            <div className="flex w-full items-center space-x-2">
+              <Input
+                placeholder="Type your message..."
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                disabled={isLoading}
+              />
+              <Button onClick={handleSend} disabled={isLoading} className="bg-blue-600 text-white hover:bg-blue-700">
+                <Send className="h-4 w-4" />
+              </Button>
+            </div>
+          </CardFooter>
+        </Card>
+
+        {/* ERP Access Card */}
+        <div className="flex flex-col justify-center">
+          <Card className="h-full flex flex-col justify-center">
+            <CardHeader>
+              <CardTitle className="flex items-center"><School className="mr-2 text-blue-400"/> Campus ERP System</CardTitle>
+              <CardDescription>Access grades, attendance, and other administrative services.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-400 mb-6">
+                The MIT-ADT University ERP system is your central portal for managing all academic and administrative tasks. Click the button below to log in with your official university credentials.
+              </p>
+            </CardContent>
+            <CardFooter>
+              <a href="https://g01.tcsion.com/SelfServices/home" target="_blank" rel="noopener noreferrer" className="w-full">
+                <Button className="w-full bg-gray-800 text-gray-200 hover:bg-gray-700 border border-gray-700">
+                  Go to ERP Portal <ExternalLink className="h-4 w-4 ml-2" />
+                </Button>
+              </a>
+            </CardFooter>
+          </Card>
+        </div>
+      </div>
+    </SectionWrapper>
+  );
 };
 
 export default AIChatbotERPSection;
