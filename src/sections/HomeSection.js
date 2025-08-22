@@ -9,7 +9,7 @@ const HomeSection = ({ setActiveSection }) => (
         Welcome to IntelliLearn
       </h1>
       <p className="mt-4 text-lg md:text-xl text-gray-300">
-        The Future of Integrated Learning at MIT-ADT University.
+        The Future of Smart & Integrated Learning at MIT-ADT University.
       </p>
       <p className="mt-4 max-w-2xl mx-auto text-gray-400">
         A smart, AI-powered platform designed to streamline academic resources, enhance communication, and provide seamless access to campus services.
