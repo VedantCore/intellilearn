@@ -14,9 +14,9 @@ const SectionWrapper = ({ id, title, subtitle, children }) => (
 const TeamSection = () => {
     const teamMembers = [
         { name: "Vedant Sarva", role: "Project Lead & Group Leader", avatar: "https://placehold.co/100x100/1e293b/94a3b8?text=PW" },
-        { name: "Sudhanshu Pawar", role: "Backend & System Architect", avatar: "https://placehold.co/100x100/1e293b/94a3b8?text=SC" },
+        { name: "Sudhanshu Pawar", role: "AI & Database Specialist (BOSS)", avatar: "https://placehold.co/100x100/1e293b/94a3b8?text=SC" },
         { name: "Shejal Dattatray", role: "UI/UX Designer & Frontend", avatar: "https://placehold.co/100x100/1e293b/94a3b8?text=PG" },
-        { name: "Arpan Dabhade", role: "AI & Database Specialist", avatar: "https://placehold.co/100x100/1e293b/94a3b8?text=SS" },
+        { name: "Arpan Dabhade", role: "Backend & System Architect (FUCKALL BOSS)", avatar: "https://placehold.co/100x100/1e293b/94a3b8?text=SS" },
     ];
 
     return (

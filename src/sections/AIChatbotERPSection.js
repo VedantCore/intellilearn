@@ -29,7 +29,7 @@ const AIChatbotERPSection = () => {
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const chatSession = model.startChat({
       history: [
@@ -54,21 +54,32 @@ const AIChatbotERPSection = () => {
 
     const userMessage = { role: 'user', content: input };
     setMessages(prev => [...prev, userMessage]);
+    const currentInput = input; // Store the input before clearing it
     setInput('');
     setIsLoading(true);
 
     try {
-      // --- API Call to Gemini ---
-      const result = await chat.sendMessage(input);
+      // 1. Get today's date and format it.
+      const todaysDate = new Date().toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+
+      // 2. Create an "augmented prompt" that includes the date as context.
+      const augmentedPrompt = `
+        Today's date is ${todaysDate}.
+        Based on this, please answer the following user question: "${currentInput}"
+      `;
+      
+      // 3. Send the AUGMENTED prompt to Gemini, not the original input.
+      const result = await chat.sendMessage(augmentedPrompt); 
       const response = await result.response;
-
-      // ✅ Get text (with markdown like **bold**)
+      
       const rawText = await response.text();
-
-      // ✅ Convert markdown → HTML
       const html = marked.parse(rawText);
 
-      // ✅ Store HTML in botResponse
       const botResponse = { role: 'model', content: html };
       setMessages(prev => [...prev, botResponse]);
 
