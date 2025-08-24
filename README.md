@@ -14,6 +14,7 @@ IntelliLearn is an AI-powered Smart Campus platform designed for MIT-ADT Univers
 ---
 
 ## Project Structure
+```
 IntelliLearn/
 ├── src/
 │ ├── components/ # Reusable UI components
@@ -22,7 +23,7 @@ IntelliLearn/
 │ └── App.jsx # Main entry point
 ├── public/ # Static files
 └── package.json # Dependencies & scripts
-
+```
 ---
 
 ## Tech Stack
