@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { marked } from "marked";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { Bot, School, Send, LogIn, UserCheck } from 'lucide-react';
+import { Bot, Send, LogIn, UserCheck } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../components/Card';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
