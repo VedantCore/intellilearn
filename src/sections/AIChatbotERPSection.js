@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { marked } from "marked";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { Bot, Send, LogIn, UserCheck } from 'lucide-react';
+import { Bot, School, Send, LogIn, UserCheck } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../components/Card';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
@@ -62,7 +62,7 @@ const AttendanceTracker = ({ onLogout }) => {
     );
 };
 
-const ErpLoginPage = ({ handleLogin }) => {
+const ErpLoginPage = ({ onLogin }) => {
     return (
         <Card className="h-full flex flex-col justify-center">
             <CardHeader className="text-center">
@@ -80,11 +80,12 @@ const ErpLoginPage = ({ handleLogin }) => {
                 </div>
             </CardContent>
             <CardFooter>
-                <Button onClick={handleLogin} className="w-full bg-blue-600 text-white hover:bg-blue-700">Login</Button>
+                <Button onClick={onLogin} className="w-full bg-blue-600 text-white hover:bg-blue-700">Login</Button>
             </CardFooter>
         </Card>
     );
 };
+
 
 // --- Main Section Component ---
 
@@ -110,16 +111,6 @@ export default function AIChatbotERPSection() {
   
   // State for ERP Section
   const [isErpLoggedIn, setIsErpLoggedIn] = useState(false);
-
-  // ERP Login Handler
-  const handleLogin = () => {
-    setIsErpLoggedIn(true);
-  };
-
-  // ERP Logout Handler
-  const handleLogout = () => {
-    setIsErpLoggedIn(false);
-  };
 
   useEffect(() => {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
@@ -223,8 +214,8 @@ export default function AIChatbotERPSection() {
         {/* Integrated ERP Section */}
         <div className="flex flex-col justify-center">
           {isErpLoggedIn 
-              ? <AttendanceTracker onLogout={handleLogout} /> 
-              : <ErpLoginPage handleLogin={handleLogin} />
+              ? <AttendanceTracker onLogout={() => setIsErpLoggedIn(false)} /> 
+              : <ErpLoginPage onLogin={() => setIsErpLoggedIn(true)} />
           }
         </div>
       </div>
