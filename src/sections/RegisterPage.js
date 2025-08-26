@@ -20,14 +20,17 @@ export default function RegisterPage({ handleShowLogin }) {
         setLoading(true);
         try {
             // The database trigger will automatically create the profile.
-            // We pass the full_name in the 'data' option so the trigger can access it.
+            // We now pass ALL the form data in the 'data' option so the trigger can access it.
             const { error } = await supabase.auth.signUp({
                 email: formData.email,
                 password: formData.password,
                 options: {
                     data: {
                         full_name: formData.fullName,
-                        // Note: Supabase auth metadata is limited. Other fields must be updated later.
+                        age: formData.age,
+                        gender: formData.gender,
+                        phone: formData.phone,
+                        enrollmentNo: formData.enrollmentNo,
                     }
                 }
             });
