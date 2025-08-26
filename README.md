@@ -39,7 +39,7 @@ IntelliLearn/
 ### Clone the Repository
 ```
 bash
-git clone https://github.com/YourUsername/IntelliLearn.git
+git clone https://github.com/VedantCore/IntelliLearn.git
 cd IntelliLearn
 ```
 Install Dependencies
@@ -59,10 +59,9 @@ Real-time ERP data integration
 
 Predictive learning analytics for student support
 
-Smart campus services such as transport, events, and notifications
-
+Smart campus services such as events, notificatioms, and e-learning resources.
 # License
-This project is licensed under the MIT License.
+© 2025 IntelliLearn by MIT-ADT University. All Rights Reserved.
 
 # Authors
 Developed as part of the Smart Campus & Smart Learning Initiative at MIT-ADT.
