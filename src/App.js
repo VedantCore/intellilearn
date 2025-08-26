@@ -14,7 +14,7 @@ import ProfilePage from './sections/ProfilePage';
 import { Button } from './components/Button';
 
 export default function App() {
-  const [session, setSession] = useState(null); // State for the user session
+  const [session, setSession] = useState(null); // <-- State for the user session
   const [authPage, setAuthPage] = useState('login');
   const [activeSection, setActiveSection] = useState('home');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
