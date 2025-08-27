@@ -5,6 +5,16 @@ import { Button } from '../components/Button';
 import { Input } from '../components/Input';
 import { User, Edit3, Save } from 'lucide-react';
 
+// Helper function to get initials from a name
+const getInitials = (name) => {
+  if (!name) return '??';
+  const names = name.split(' ');
+  if (names.length > 1) {
+    return `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase();
+  }
+  return name.substring(0, 2).toUpperCase();
+};
+
 export default function ProfilePage({ session }) {
     const [loading, setLoading] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
@@ -80,22 +90,24 @@ export default function ProfilePage({ session }) {
     };
 
     if (loading) {
-        return <div>Loading profile...</div>;
+        return <div className="text-center text-gray-400">Loading profile...</div>;
     }
+
+    const userInitials = getInitials(profileData.fullName);
 
     return (
         <div className="max-w-4xl mx-auto animate-fade-in-up">
             <Card>
                 <CardHeader>
-                    <div className="flex justify-between items-center">
+                    <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
                         <div className="flex items-center space-x-4">
-                            <img src="https://placehold.co/80x80/1e293b/94a3b8?text=PW" alt="Profile" className="w-20 h-20 rounded-full border-2 border-blue-500" />
+                            <img src={`https://placehold.co/80x80/1e293b/94a3b8?text=${userInitials}`} alt="Profile" className="w-20 h-20 rounded-full border-2 border-blue-500" />
                             <div>
                                 <CardTitle className="flex items-center"><User className="mr-2 text-blue-400"/> Student Profile</CardTitle>
                                 <CardDescription>View and edit your personal information.</CardDescription>
                             </div>
                         </div>
-                        <Button onClick={() => isEditing ? handleUpdateProfile() : setIsEditing(true)} disabled={loading} className="bg-blue-600 text-white hover:bg-blue-700">
+                        <Button onClick={() => isEditing ? handleUpdateProfile() : setIsEditing(true)} disabled={loading} className="bg-blue-600 text-white hover:bg-blue-700 w-full sm:w-auto">
                             {isEditing ? <Save className="mr-2 h-4 w-4" /> : <Edit3 className="mr-2 h-4 w-4" />}
                             {isEditing ? (loading ? 'Saving...' : 'Save') : 'Edit'}
                         </Button>
