@@ -29,7 +29,7 @@ IntelliLearn/
 ## Tech Stack
 - Frontend: React.js  
 - Styling: Tailwind CSS, shadcn/ui  
-- AI & NLP (Prototype): Placeholder chatbot simulation (extendable with OpenAI or Rasa)  
+- AI & NLP (Based upon a Knowledge base): Powered by Google AI Studio: Google Gemini 1.5 Flash
 - Integration: ERP portal linking  
 
 ---
