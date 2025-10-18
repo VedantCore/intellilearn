@@ -33,8 +33,21 @@ export default function AIChatbotERPSection() {
   useEffect(() => {
     const initializeChat = async () => {
       try {
-        // Fixed: Changed to correct model name
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        // Check if API key exists
+        if (!process.env.REACT_APP_GEMINI_API_KEY) {
+          throw new Error("API key not found");
+        }
+
+        console.log("Initializing Gemini AI...");
+        
+        // Try gemini-2.5-flash first (latest stable model)
+        const model = genAI.getGenerativeModel({ 
+          model: "gemini-2.5-flash",
+          generationConfig: { 
+            maxOutputTokens: 1000,
+            temperature: 0.7,
+          }
+        });
         
         const chatSession = model.startChat({
           history: [
@@ -47,17 +60,18 @@ export default function AIChatbotERPSection() {
               parts: [{ text: "Okay, I am the IntelliLearn AI. I will answer questions based on the provided information. How can I help?" }] 
             }
           ],
-          generationConfig: { maxOutputTokens: 1000 },
         });
         
+        console.log("Gemini AI initialized successfully!");
         setChat(chatSession);
         setInitError(false);
       } catch (error) {
         console.error("Error initializing chat:", error);
+        console.error("Error details:", error.message);
         setInitError(true);
         setMessages(prev => [...prev, { 
           role: 'model', 
-          content: 'Failed to initialize AI assistant. Please check your API key and try refreshing the page.' 
+          content: `Failed to initialize AI assistant: ${error.message}. Please check your API key in .env file.` 
         }]);
       }
     };
