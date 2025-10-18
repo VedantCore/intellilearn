@@ -27,24 +27,42 @@ export default function AIChatbotERPSection() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [chat, setChat] = useState(null);
+  const [initError, setInitError] = useState(false);
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const chatSession = model.startChat({
-      history: [
-        { 
-          role: "user", 
-          parts: [{ text: `You are a helpful assistant for MIT-ADT University, named IntelliLearn AI. Answer questions based ONLY on this knowledge base: \n\n${universityKnowledge}` }] 
-        },
-        { 
-          role: "model", 
-          parts: [{ text: "Okay, I am the IntelliLearn AI. I will answer questions based on the provided information. How can I help?" }] 
-        }
-      ],
-      generationConfig: { maxOutputTokens: 1000 },
-    });
-    setChat(chatSession);
+    const initializeChat = async () => {
+      try {
+        // Fixed: Changed to correct model name
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        
+        const chatSession = model.startChat({
+          history: [
+            { 
+              role: "user", 
+              parts: [{ text: `You are a helpful assistant for MIT-ADT University, named IntelliLearn AI. Answer questions based ONLY on this knowledge base: \n\n${universityKnowledge}` }] 
+            },
+            { 
+              role: "model", 
+              parts: [{ text: "Okay, I am the IntelliLearn AI. I will answer questions based on the provided information. How can I help?" }] 
+            }
+          ],
+          generationConfig: { maxOutputTokens: 1000 },
+        });
+        
+        setChat(chatSession);
+        setInitError(false);
+      } catch (error) {
+        console.error("Error initializing chat:", error);
+        setInitError(true);
+        setMessages(prev => [...prev, { 
+          role: 'model', 
+          content: 'Failed to initialize AI assistant. Please check your API key and try refreshing the page.' 
+        }]);
+      }
+    };
+
+    initializeChat();
   }, []);
 
   const scrollToBottom = () => {
@@ -55,11 +73,13 @@ export default function AIChatbotERPSection() {
 
   const handleSend = async () => {
     if (input.trim() === '' || isLoading || !chat) return;
+    
     const userMessage = { role: 'user', content: input };
     setMessages(prev => [...prev, userMessage]);
     const currentInput = input;
     setInput('');
     setIsLoading(true);
+    
     try {
       const result = await chat.sendMessage(currentInput); 
       const response = await result.response;
@@ -69,7 +89,10 @@ export default function AIChatbotERPSection() {
       setMessages(prev => [...prev, botResponse]);
     } catch (error) {
       console.error("Error fetching response from Gemini API:", error);
-      const errorMessage = { role: 'model', content: "Sorry, I'm having trouble connecting. Please try again later." };
+      const errorMessage = { 
+        role: 'model', 
+        content: "Sorry, I'm having trouble connecting. Please try again later." 
+      };
       setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
@@ -119,9 +142,9 @@ export default function AIChatbotERPSection() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                disabled={isLoading}
+                disabled={isLoading || initError}
               />
-              <Button onClick={handleSend} disabled={isLoading} className="bg-blue-600 text-white hover:bg-blue-700">
+              <Button onClick={handleSend} disabled={isLoading || initError} className="bg-blue-600 text-white hover:bg-blue-700">
                 <Send className="h-4 w-4" />
               </Button>
             </div>
