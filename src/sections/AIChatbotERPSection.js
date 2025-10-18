@@ -96,8 +96,7 @@ export default function AIChatbotERPSection() {
     
     try {
       const result = await chat.sendMessage(currentInput); 
-      const response = await result.response;
-      const rawText = await response.text();
+      const rawText = result.response.text();
       const html = marked.parse(rawText);
       const botResponse = { role: 'model', content: html };
       setMessages(prev => [...prev, botResponse]);
@@ -105,7 +104,7 @@ export default function AIChatbotERPSection() {
       console.error("Error fetching response from Gemini API:", error);
       const errorMessage = { 
         role: 'model', 
-        content: "Sorry, I'm having trouble connecting. Please try again later." 
+        content: `Error: ${error.message}` 
       };
       setMessages(prev => [...prev, errorMessage]);
     } finally {
