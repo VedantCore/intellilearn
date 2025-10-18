@@ -40,7 +40,7 @@ export default function AIChatbotERPSection() {
 
         console.log("Initializing Gemini AI...");
         
-        // Try gemini-2.5-flash first (latest stable model)
+        // Use gemini-2.5-flash (current stable model as of 2025)
         const model = genAI.getGenerativeModel({ 
           model: "gemini-2.5-flash",
           generationConfig: { 
@@ -71,7 +71,7 @@ export default function AIChatbotERPSection() {
         setInitError(true);
         setMessages(prev => [...prev, { 
           role: 'model', 
-          content: `Failed to initialize AI assistant: ${error.message}. Please check your API key in .env file.` 
+          content: `Failed to initialize AI assistant: ${error.message}. Please check your API key.` 
         }]);
       }
     };
